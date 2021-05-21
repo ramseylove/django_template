@@ -1,4 +1,7 @@
-.PHONY: init ci analyze remove_vol dev up down migrate superuser
+.PHONY: init ci analyze remove_vol build up down migrate superuser
+
+projectName = pbr_site
+dockerComposeFile = docker-compose-dev.yml
 
 init:
 	curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
@@ -7,15 +10,15 @@ analyze:
 	pipenv run flake8 .
 	pipenv run isort -v
 remove_vol:
-	docker volume rm project_management_backend_postgres_data
-dev:
-	docker-compose -f docker-compose-dev.yml build
+	docker volume rm $(projectName)_postgres_data
+build:
+	docker-compose -f $(dockerComposeFile) build
 up:
-	docker-compose -f docker-compose-dev.yml up
+	docker-compose -f $(dockerComposeFile) up
 down:
-	docker-compose -f docker-compose-dev.yml down
+	docker-compose -f $(dockerComposeFile) down
 migrate:
-	docker-compose -f docker-compose-dev.yml run --rm web python manage.py migrate
+	docker-compose -f $(dockerComposeFile) run --rm web python manage.py migrate
 superuser:
-	docker-compose -f docker-compose-dev.yml run --rm web python manage.py createsuperuser
+	docker-compose -f $(dockerComposeFile) run --rm web python manage.py createsuperuser
 
