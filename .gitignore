@@ -1,0 +1,24 @@
+# OSX #
+.DS_Store
+.bash_history
+## ignore editor settings
+.vscode/
+.idea/
+# ignore dotenv file
+*.env*
+
+## ignore static collect files
+static/
+
+# ignore pyc files created by django or python
+*.pyc
+
+# Byte-compiled / optimized / DLL files #
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Django #
+*.log
+db.sqlite3
+media
