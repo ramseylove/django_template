@@ -14,6 +14,7 @@ fi
 python manage.py flush --no-input
 python manage.py makemigrations
 python manage.py migrate
+python manage.py collectstatic --noinput
 #python manage.py loaddata scripts/db_seed_data.json
 
 exec "$@"

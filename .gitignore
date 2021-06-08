@@ -9,6 +9,8 @@
 
 ## ignore static collect files
 static/
+staticfiles/
+media/
 
 # ignore pyc files created by django or python
 *.pyc
@@ -21,4 +23,3 @@ __pycache__/
 # Django #
 *.log
 db.sqlite3
-media

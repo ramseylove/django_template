@@ -51,6 +51,11 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 ]
 
+if ENVIRONMENT == 'docker_development':
+    INSTALLED_APPS += [
+        'django_extensions',
+    ]
+
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
@@ -153,7 +158,34 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/3.2/howto/static-files/
 
-STATIC_URL = '/static/'
+STATICFILES_DIRS = [
+    os.path.join(BASE_DIR, 'static'),
+]
+
+if os.environ.get('USE_S3') is not None:
+    AWS_ACCESS_KEY_ID = os.getenv('SPACES_ACCESS_KEY_ID')  # access key
+    AWS_SECRET_ACCESS_KEY = os.getenv('SPACES_SECRET_ACCESS_KEY')  # secret
+    AWS_STORAGE_BUCKET_NAME = os.getenv('SPACES_BUCKET_NAME')
+    AWS_S3_REGION_NAME = 'sfo3'
+    AWS_S3_ENDPOINT_URL = f'https://{AWS_S3_REGION_NAME}.digitaloceanspaces.com'
+    AWS_S3_OBJECT_PARAMETERS = {'CacheControl': 'max-age=86400'}
+    AWS_DEFAULT_ACL = 'public-read'
+    # s3 static settings
+    STATIC_LOCATION = 'static'
+    STATIC_URL = f'{AWS_S3_ENDPOINT_URL}/{STATIC_LOCATION}/'
+    STATICFILES_STORAGE = 'config.custom_storages.StaticStorage'
+    # s3 public media settings
+    PUBLIC_MEDIA_LOCATION = 'media'
+    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/{PUBLIC_MEDIA_LOCATION}/'
+    DEFAULT_FILE_STORAGE = 'config.custom_storages.MediaStorage'
+    AWS_QUERYSTRING_AUTH = False  # ckeditor with AWS
+    STATIC_ROOT = f'{AWS_STORAGE_BUCKET_NAME}.{AWS_S3_REGION_NAME}.digitaloceanspaces.com/{STATIC_LOCATION}'
+
+else:
+    STATIC_URL = '/static/'
+    STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
